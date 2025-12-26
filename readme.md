@@ -4,6 +4,9 @@ Olist is a major Brazilian Ecommerce marketplace that connects thousands of smal
 
 100,000+ records of real commercial data across 9 relational tables of data between 2016-2018 and this is one of the most popular real-world datasets being used for ecommerce analytics.
 
+Kaggle Dataset Link: https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce
+
+
 
 ---
 By [Subhanu](https://github.com/subhanu-dev) 🚀
