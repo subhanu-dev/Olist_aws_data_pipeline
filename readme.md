@@ -6,7 +6,7 @@ Olist is a major Brazilian Ecommerce marketplace that connects thousands of smal
 
 Instead of doing a regular analysis using this dataset, I used this real world to create a production scale data pipeline using Amazon Web Services, Snowflake and Power BI.
 
-System architecture is as follows.
+System architecture is as follows,
 
 ![System Architecture](images/architecture.png)
 
@@ -68,8 +68,7 @@ Kaggle Dataset Link: https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce
 ![](images/aws%20s3.png)
 
 
-These are then crawled in AWS Glue for cataloging
-
+These are then crawled in AWS Glue for cataloging, crawled data was prefixed with separate folder for each file inside the data folder in S3 so that the crawler would better work. Otherwise Athena will return zero results though the tables would be available in data catalog 
 ![](images/aws%20glue%20crawler.png)
 
 ![](images/aws%20glue%20catalog.png)
@@ -78,7 +77,7 @@ these cataloged tables are then used inside AWS Athena for Querying without load
 
 ![](images/aws%20athena.png)
 
-Athena was used to query the data in s3 to better understand structure of the data before loading into Snowflake. Athena query results were set to be stored in the same bucket inside the /athena_results/ table.
+Athena was used to query the data in s3 to better understand structure of the data before loading into Snowflake. Athena query results were set to be stored in the same bucket inside the /athena_results/ folder.
 
 Loading data from S3 to Snowflake was done in 3 ways,
 1. Batch loading using an external stage
@@ -103,7 +102,7 @@ Real time data ingestion using Snowpipe streaming that land in s3 which are then
 
 ![Snowpipe streaming](images/snowpipe_streaming.png)
 
-Power BI connection to Snowflake was done using both import and directQuery. (Customer reviews table which was also pulled to snowflake using an external table was loaded into power BI also using directQuery. 
+Power BI connection to Snowflake was done using both import and directQuery. (Customer reviews table which was also pulled to snowflake using an external table was loaded into power BI also using directQuery)
 
 
 Data Model in Power BI
