@@ -4,8 +4,6 @@ Olist is a major Brazilian Ecommerce marketplace that connects thousands of smal
 
 100,000+ records of real commercial data across 9 relational tables of data between 2016-2018 and this is one of the most popular real-world datasets being used for ecommerce analytics.
 
-Kaggle Dataset Link: https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce
-
 Instead of doing a regular analysis using this dataset, I used this real world to create a production scale data pipeline using Amazon Web Services, Snowflake and Power BI.
 
 System architecture is as follows.
@@ -36,10 +34,13 @@ System architecture is as follows.
 
 This project also simulates a real time stream of JSON files that goes through the pipeline. 
 
-Final Power BI Dashboard Output
+### Final Power BI Dashboard Output
 
-![Power BI Dashboard](images/dash product.png)
-![Power BI Dashboard](images/dash customers.png)
+![Power BI Dashboard](images/dash%20customers.png)
+<br>
+
+![Power BI Dashboard](images/dash%20product.png) 
+
 
 
 ## Setup Details
@@ -51,7 +52,18 @@ To reduce data transfer fees between locations and for the each on integration, 
 
 all SQL files and Power BI(.pbix) file is available inside the repo.
 
-all Olist Data files are uploaded to s3 bucket
+all Olist Data files are uploaded to s3 bucket. The 9 relational Tables are,
+1. Customers
+2. Orders
+3. Order Items
+4. Order Reviews
+5. Order Payments
+6. Sellers
+7. Geolocation
+8. Products
+9. Category name translations
+
+Kaggle Dataset Link: https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce
 
 ![](images/aws%20s3.png)
 
@@ -66,37 +78,58 @@ these cataloged tables are then used inside AWS Athena for Querying without load
 
 ![](images/aws%20athena.png)
 
-Athena is used to query the data in s3 to better understand structure of the data before loading into Snowflake. 
+Athena was used to query the data in s3 to better understand structure of the data before loading into Snowflake. Athena query results were set to be stored in the same bucket inside the /athena_results/ table.
 
 Loading data from S3 to Snowflake was done in 3 ways,
 1. Batch loading using an external stage
 2. External Table on top of s3 without loading (for customer reviews table)
 3. Snowpipe streaming ( for the simulated JSON file streams)
 
-Once the data was loaded to snowflake
+Once the data was loaded to snowflake, we can work with the data inside of it to do our exploratory analysis.
 
 ![](images/snowflake.png)
+
+Compute_WH of size X-Small was set to auto_suspend=50 and auto_resume=True with a max_cluster_count set to 2. 
+
+Transformations inside Snowflake
+
+These categories were added to the category name translations to be inclusive of all categories in products table <br>
+`INSERT INTO CATEGORY_NAME_TRANSLATIONS(PRODUCT_CATEGORY, PRODUCT_CATEGORY_ENG)
+VALUES('portateis_cozinha_e_preparadores_de_alimentos','Portable Kitchen Appliances and Food Preparers'), ('pc_gamer','gaming PC');`
+
+exploratory analysis done inside snowflake is available as file - olist_exploratory.sql
 
 Real time data ingestion using Snowpipe streaming that land in s3 which are then passed into snowflake. 
 
 ![Snowpipe streaming](images/snowpipe_streaming.png)
+
+Power BI connection to Snowflake was done using both import and directQuery. (Customer reviews table which was also pulled to snowflake using an external table was loaded into power BI also using directQuery. 
 
 
 Data Model in Power BI
 
 ![Power BI Data Model](images/power_bi_data_model.png)
 
+Data Model was build following the connection structures in the tables. 
 
-Full Dashboard View
+Transformations inside of Power BI
+
+- Category Name translations were merged with products table.
+- Data type changes to currency fields to be Brazillian Currency - R$ (Real)
+- Calculated columns to get the total charge (Price+Freight Cost)
+- Renamed column 'Urder_puurchase_timestamp' -> 'order_purchase_timestamp'
+- Custom measuures for Items in an order & Freight Value out of total
+
+  
+### Final Dashboard View
+
+These KPIs present interesting insights into Olist Customers, Orders, Products and Sellers. All of the Visualizations are fully interactive.
+
+![Power BI Page 01](images/dash%20customers%20full.png)
+
+![Power BI Page 01](images/dash%20product%20full.png)
 
 
-![Power BI Page 01](images/dash customers full.png)
-
-
-![Power BI Page 01](images/dash product full.png)
-
-
-### Power BI transformations
 
 
 
@@ -150,10 +183,6 @@ meaning: “One negative point I noticed was being charged three delivery fees, 
 12. ALL SELLERS ARE also not included in the sellers table. Meaning this is not a complete dataset of all the sellers that exist in olist platform during that period. what's included in the sellers dataset are only the sellers that correspond to the orders where order items relate to.
 
     Same can be said about the products table (as in point 01 above). Because of this, we couldn't do an analysis of sellers who made their sales against who did not during this period. 
-
-
-# Business Insights based on the Data
-
 
 
 
